@@ -9,4 +9,19 @@
 
 # Make sure your secret_key_base is kept private
 # if you're sharing your code publicly.
-Sweep::Application.config.secret_key_base = '37d8cf35c0c6cb6942b2150a7e99e50b2e11e4a58b9f669974b318ca42ae996c0d9310a0a76662b3926506c822aaecb2206d5826fd928f7e12c87c08ee59e1d8'
+require 'securerandom'
+
+def secure_token
+  token_file = Rails.root.join('.secret')
+  if File.exist?(token_file)
+    # Use the existing token.
+    File.read(token_file).chomp
+  else
+    # Generate a new token and store it in token_file.
+    token = SecureRandom.hex(64)
+    File.write(token_file, token)
+    token
+  end
+end
+
+Sweep::Application.config.secret_key_base = secure_token
